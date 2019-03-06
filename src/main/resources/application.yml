@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: zuulservice
+  profiles:
+    active:
+      default
+  sleuth:
+    sampler:
+      probability: 1
+  zipkin:
+    baseUrl:  http://localhost:9411
+  cloud:
+    config:
+      uri: http://localhost:8888
+
+server:
+  port: 5555
+
+  #Setting logging levels
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" #暴露所有端点 默认是info,health
+
+
+#
+#
+#  debug:
+#    request: true
+#
+#zuul:
+#  prefix:  /api
+#  routes:
+#    organizationservice: /organization/**
+#    licensingservice: /licensing/**
+
+zuul:
+  #设置Hystrix隔离策略为线程池
+  ribbon-isolation-strategy: thread
+  thread-pool:
+    #每个路由使用独立的线程池
+    use-separate-thread-pools: true
